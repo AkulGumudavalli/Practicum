@@ -1,7 +1,11 @@
 import java.util.Scanner;
 
 public class SafeInput {
-    public static String getNonZeroLenString(Scanner pipe, String prompt){
+    Scanner pipe;
+    public SafeInput(Scanner pipe){
+        this.pipe = pipe;
+    }
+    public String getNonZeroLenString(String prompt){
         String retString = ""; // Set this to zero length. Loop runs until it isn't
         do
         {
@@ -12,7 +16,7 @@ public class SafeInput {
         return retString;
 
     }
-    public static int getInt(Scanner pipe, String prompt){
+    public  int getInt(Scanner pipe, String prompt){
         boolean gotValue = false;
         int retInt = 0;
         do{
@@ -27,7 +31,7 @@ public class SafeInput {
         }while(!gotValue);
         return retInt;
     }
-    public static double getDouble(Scanner pipe, String prompt){
+    public  double getDouble(String prompt){
         boolean gotValue = false;
         double retDouble = 0;
         do{
@@ -42,7 +46,7 @@ public class SafeInput {
         }while(!gotValue);
         return retDouble;
     }
-    public static int getRangedInt(Scanner pipe, String prompt, int low, int high){
+    public  int getRangedInt(String prompt, int low, int high){
         boolean gotValue = false;
         int retDouble = 0;
         do{
@@ -63,7 +67,7 @@ public class SafeInput {
         }while(!gotValue);
         return retDouble;
     }
-    public static double getRangedDouble(Scanner pipe, String prompt, double low, double high){
+    public  double getRangedDouble(Scanner pipe, String prompt, double low, double high){
         boolean gotValue = false;
         double retDouble = 0;
         do{
@@ -84,7 +88,7 @@ public class SafeInput {
         }while(!gotValue);
         return retDouble;
     }
-    public static boolean getYNconfirm(Scanner pipe, String prompt){
+    public  boolean getYNconfirm( String prompt){
         boolean retBoolean = false;
         boolean gotValue = false;
         do{
@@ -107,7 +111,7 @@ public class SafeInput {
         }while(!gotValue);
         return retBoolean;
     }
-    public static String getregExString(Scanner pipe, String prompt, String regExPattern){
+    public  String getregExString(String prompt, String regExPattern){
         String retString = "";
         boolean gotValue = false;
 
@@ -130,7 +134,7 @@ public class SafeInput {
         }while(!gotValue);
         return retString;
     }
-    public static void prettyHeader(String message){
+    public  void prettyHeader(String message){
         int total_char = 60;
         int message_char = 60 - message.length();
         int left_padding = message_char/2;

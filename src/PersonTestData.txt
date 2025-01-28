@@ -1,2 +1,0 @@
-000001,Jackson,Michal,Mr.,1958
-000002,James,Lebron,Mr.,1984

@@ -1,47 +1,79 @@
 import javax.swing.*;
-import java.io.*;
-import java.nio.file.Files;
+import java.io.File;
+import java.io.FileWriter;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
-
-import static java.nio.file.StandardOpenOption.CREATE;
 
 public class ProductGenerator {
     public static void main(String[] args){
         Scanner input = new Scanner(System.in);
         boolean loopState = true;
+        SafeInput safeInput = new SafeInput(input);
         JFileChooser chooser = new JFileChooser();
         File working_directory = new File(System.getProperty("user.dir"));
-        Path file = Paths.get(working_directory.getPath() +"\\src\\ItemData.txt");
         chooser.setCurrentDirectory(working_directory);
-        ArrayList<String> items= new ArrayList<>();
+        String extenstion = new String();
+        File selectedFile = null;
+        if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+            selectedFile = chooser.getSelectedFile();
+            Path file = selectedFile.toPath();
+        }else{
+            String path = safeInput.getNonZeroLenString("What do you want to name your file");
+            String type = null;
+            do{
+                type = safeInput.getNonZeroLenString("What type do you want your file");
+            }while(type == null);
+            selectedFile =new File(working_directory+"\\src\\"+path+"."+type);
+        }
+        ArrayList<Product> items= new ArrayList<>();
         String id;
         String name;
         String description;
         double cost;
         do{
-            id = SafeInput.getNonZeroLenString(input,"What is your id");
-            name = SafeInput.getNonZeroLenString(input,"What is your items name");
-            description=SafeInput.getNonZeroLenString(input,"What is your items discription");
-            cost =SafeInput.getDouble(input,"What is items cost");
-
-            String join = id +","+name+","+description+","+cost;
-            items.add(join);
-            loopState = SafeInput.getYNconfirm(input,"Do you want to input more");
+            id = safeInput.getNonZeroLenString("What is your id");
+            name = safeInput.getNonZeroLenString("What is your items name");
+            description=safeInput.getNonZeroLenString("What is your items discription");
+            cost =safeInput.getDouble("What is items cost");
+            Product product = new Product(id,name,description,cost);
+            items.add(product);
+            loopState = safeInput.getYNconfirm("Do you want to input more");
         }while(loopState);
-        try{
-            OutputStream out = new BufferedOutputStream(Files.newOutputStream(file,CREATE));
-            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out));
-
-            for(String write:items){
-                writer.write(write,0,write.length());
-                writer.newLine();
+        assert selectedFile != null;
+        String fileName = selectedFile.getName();
+        int dotIndex = fileName.lastIndexOf('.');
+        if (dotIndex > 0 && dotIndex < fileName.length() - 1) {
+            extenstion = fileName.substring(dotIndex + 1).toLowerCase();
+        }
+        try {
+            FileWriter writer = new FileWriter(selectedFile.getPath());
+            for (Product h : items) {
+                if(extenstion.equalsIgnoreCase("csv")){
+                    List<String> stuffAboutPeople = h.toCSV();
+                    writer.append(stuffAboutPeople.getFirst());
+                    writer.append(",");
+                    writer.append(stuffAboutPeople.get(1));
+                    writer.append(",");
+                    writer.append(stuffAboutPeople.get(2));
+                    writer.append(",");
+                    writer.append(stuffAboutPeople.get(3));
+                    writer.append("\n");
+                }
+                else if(extenstion.equalsIgnoreCase("xml")){
+                    String hello = h.toXML();
+                    writer.write(hello);
+                    writer.write("\n");
+                }else if(extenstion.equalsIgnoreCase("json")) {
+                    String hello = h.toJson();
+                    writer.write(hello);
+                    writer.write("\n");
+                }
             }
             writer.close();
             System.out.println("DONE");
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
